@@ -27,8 +27,16 @@ const selectedCountry = computed((): Country =>
 )
 const fullPhoneNumber = computed(() => `${selectedCountry.value.prefix}${phoneDigits.value}`);
 const phoneError = ref(false)
+const phoneErrorMessage = ref('')
 const password = ref('')
-
+const passwordError = ref(false);
+const passwordRequirements = computed(() => [
+  { label: "Must be at least 6 characters long", satisfied: password.value.length > 6 },
+  { label: "Missing an uppercase letter", satisfied: /[A-Z]/.test(password.value) },
+  { label: "Missing a number", satisfied: /\d/.test(password.value) },
+  { label: "Missing a special character", satisfied: /[@$!%*?&#^()_=+\[\]{}|;:,.<>\-]/.test(password.value) },
+]);
+const isPasswordValid = computed(() => passwordRequirements.value.every(req => req.satisfied));
 const errorMessage = ref('')
 const nameError = ref(false)
 const isCheckingName = ref(false)
@@ -41,7 +49,16 @@ watch(phoneDigits, (val) => {
     phoneDigits.value = cleaned;
   }
 
-  phoneError.value = cleaned.length > 0 && cleaned.length < 5;
+  if (cleaned.length > 0 && cleaned.length < 5) {
+    phoneError.value = true;
+    phoneErrorMessage.value = "Phone number must be at least 5 digits.";
+  } else if (cleaned.length > 15) {
+    phoneError.value = true;
+    phoneErrorMessage.value = "Phone number must not be longer than 15 digits.";
+  } else {
+    phoneError.value = false;
+    phoneErrorMessage.value = "";
+  }
 });
 
 watch(name, (newName) => {
@@ -70,8 +87,18 @@ async function onSubmit(e: Event) {
   errorMessage.value = ''
   nameError.value = false
 
+  if (!isPasswordValid.value) {
+    errorMessage.value = "Please satisfy all password requirements.";
+    passwordError.value = true;
+    return;
+  }
+
   if (phoneDigits.value.length < 5) {
     errorMessage.value = "Phone number is too short."
+    return;
+  }
+  if (phoneDigits.value.length > 15) {
+    errorMessage.value = "Phone number is too long."
     return;
   }
 
@@ -157,7 +184,7 @@ async function onSubmit(e: Event) {
             id="phone"
             type="text"
             v-model="phoneDigits"
-            placeholder="691234567"
+            placeholder="12345678"
             :class="[
             'rounded-l-none border-l-1 focus-visible:ring-0 focus-visible:ring-offset-0 h-10 flex-1 transition-colors',
             phoneError ? 'border-red-500 bg-red-50 dark:bg-red-950/20' : ''
@@ -166,7 +193,7 @@ async function onSubmit(e: Event) {
         />
       </div>
       <p v-if="phoneError" class="text-red-500 text-xs mt-1">
-        Phone number must be at least 5 digits.
+        {{ phoneErrorMessage }}
       </p>
     </div>
 
@@ -174,7 +201,24 @@ async function onSubmit(e: Event) {
         <div class="mb-2 block">
         <Label for="userpwd" class="font-semibold">Password</Label>
       </div>
-      <Input id="userpwd" type="password" v-model="password" class="form-control" required />
+      <Input id="userpwd" type="password" v-model="password"
+             :class="[
+             'form-control transition-colors',
+             passwordError && !isPasswordValid ? 'border-red-500 bg-red-50 dark:bg-red-950/2' : ''
+             ]"
+             required
+      />
+      <div v-if="password" class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 mt-3">
+        <div v-for="req in passwordRequirements" :key="req.label"
+             class="flex items-center gap-2 transition-all duration-300"
+             :class="req.satisfied ? 'text-green-500' : 'text-red-500 opacity-70'"
+        >
+          <Icon :icon="req.satisfied ? 'solar:check-circle-bold' : 'solar:round-alt-arrow-right-bold'"
+                :class="req.satisfied ? 'scale-110' : 'scale-90'"
+                width="16" />
+          <span class="text-xs font-medium">{{ req.label }}</span>
+        </div>
+      </div>
     </div>
 
     <Button type="submit" class="w-full ">
