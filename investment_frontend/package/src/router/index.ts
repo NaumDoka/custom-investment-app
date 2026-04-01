@@ -2,6 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth } from '@/store/auth'
 import MainRoutes from "@/router/MainRoutes.ts";
 
+declare module 'vue-router' {
+  interface RouteMeta {
+    requiresAuth?: boolean;
+    roles?: string[];
+  }
+}
+
 const routes = [
   {
     path: '/auth',
@@ -41,8 +48,10 @@ router.beforeEach((to, _, next) => {
   }
 
   // 2. ROLE CHECK: If trying to access admin and role is NOT ADMIN
-  if (to.name === 'admin' && user?.role !== 'ADMIN') {
-    return next({ name: 'Home' });
+  if (to.meta.roles && to.meta.roles.length > 0 && user?.role !== 'ADMIN') {
+    if (!user || !to.meta.roles.includes(user.role)) {
+      return next({ name: 'Home' });
+    }
   }
 
   // 3. If logged in, don't allow access to Log in/Register

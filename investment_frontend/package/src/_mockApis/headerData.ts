@@ -56,6 +56,7 @@ const profileDD: profileType[] = [
     subtitle: "My Admin Actions",
     url: "/hidden-admin-9823",
     img: "tabler:mail",
+    roles: ['ADMIN'],
   },
 ];
 

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import {
   Sidebar,
   SidebarHeader,
   SidebarContent,
-
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import sidebarItems from "./sidebarItems";
@@ -19,9 +18,12 @@ import LayoutLogo from "../logo/Logo.vue";
 
 import Button from "@/components/ui/button/Button.vue";
 import rocket from '@/assets/images/backgrounds/rocket.png'
+import {useAuth} from "@/store/auth.ts";
 
 
 const isHovered = ref(false);
+const { user } = useAuth();
+
 onMounted(() => {
   const wrapper = document.querySelector(".sidebar-wrapper");
   const sidebar = document.querySelector('[data-slot="sidebar"]');
@@ -51,10 +53,44 @@ onMounted(() => {
 
 });
 
+const filterMenuByRole = (menuList: any[], userRole: string): any[] => {
+  // Defensive check: ensure menuList is an array
+  if (!Array.isArray(menuList)) return [];
 
+  return menuList
+      .filter((item) => {
+        if (!item) return false; // 1. Strip out null/undefined items
 
+        // 2. Check role permissions
+        if (item.roles && item.roles.length > 0) {
+          return item.roles.includes(userRole);
+        }
+        return true;
+      })
+      .map((item) => {
+        // 3. Recursively filter children
+        if (item.children) {
+          return {
+            ...item,
+            children: filterMenuByRole(item.children, userRole),
+          };
+        }
+        return item;
+      })
+      .filter((item) => {
+        // 4. Bonus UI fix: If an item had children, but we filtered all of them out,
+        // hide the parent menu entirely so you don't get an empty dropdown arrow.
+        if (item.children && item.children.length === 0) {
+          return false;
+        }
+        return true;
+      });
+};
 
-
+const visibleSidebarItems = computed(() => {
+  const role = user.value?.role || 'CLIENT'; // Default to CLIENT if no role found
+  return filterMenuByRole(sidebarItems, role);
+});
 </script>
 
 <template>
@@ -70,7 +106,7 @@ onMounted(() => {
       <simplebar class="h-[calc(100vh_-_100px)]">
         <SidebarMenu>
           <!---Menu Loop -->
-          <template v-for="item in sidebarItems" :key="item.title">
+          <template v-for="(item, index) in visibleSidebarItems" :key="item.title || item.header || index">
             <!--If Has Caption-->
             <LayoutVerticalSidebarNavGroup v-if="item.header" :item="item" />
             <!---If Has Child -->

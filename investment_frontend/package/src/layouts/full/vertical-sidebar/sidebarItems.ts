@@ -13,6 +13,7 @@ export interface menu {
   type?: string;
   subCaption?: string;
   isPro?: boolean
+  roles?: string[];
 }
 
 const sidebarItem: menu[] = [
@@ -30,12 +31,13 @@ const sidebarItem: menu[] = [
     title: "Tables",
     icon: "tablet-linear",
     to: "#",
-
+    roles: ['ADMIN'],
     children: [
       {
         title: 'Administration Table',
         to: '/shadcn-table/administration-table',
         isPro: false,
+        roles: ['ADMIN'],
       },
 
     ]

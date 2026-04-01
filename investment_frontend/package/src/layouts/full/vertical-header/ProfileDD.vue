@@ -6,19 +6,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/vue";
-import { profileDD } from "../../../_mockApis/headerData";
+import { profileDD } from "@/_mockApis/headerData.ts";
 import SimpleBar from "simplebar-vue";
 import user1 from "@/assets/images/profile/user-1.jpg";
 import { useRouter } from "vue-router";
 import { useAuth } from "@/store/auth.ts";
+import {computed} from "vue";
 
 const router = useRouter();
-const { logout } = useAuth();
+const { logout, user } = useAuth();
 
 const handleLogout = () => {
   logout();
   router.push("/auth/login2");
 }
+
+const visibleProfileDD = computed(() => {
+  const currentUserRole = user.value?.role || 'CLIENT';
+  return profileDD.filter(item => {
+    if (item.roles && item.roles.length > 0) {
+      return item.roles.includes(currentUserRole);
+    }
+    return true;
+  })
+})
 </script>
 
 <template>
@@ -38,7 +49,7 @@ const handleLogout = () => {
         <!-- Scrollable Items -->
         <SimpleBar>
           <div>
-            <RouterLink v-for="(item, index) in profileDD" :key="index" @click="$router.push(item.url)"
+            <RouterLink v-for="(item, index) in visibleProfileDD" :key="index" @click="$router.push(item.url)"
               class="px-4 py-2 flex items-center group hover:bg-lightprimary cursor-pointer" :to="item.url">
 
 

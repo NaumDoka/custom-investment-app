@@ -7,6 +7,7 @@ const MainRoutes = [
             {
                 path: '/hidden-admin-9823',
                 name: 'admin',
+                meta: { roles: ['ADMIN'] },
                 component: () => import('@/components/dashboards/Admin.vue'),
             },
             {
@@ -22,6 +23,7 @@ const MainRoutes = [
             {
                 name: 'Administration Table',
                 path: '/shadcn-table/administration-table',
+                meta: { roles: ['ADMIN'] },
                 component: () => import('../views/shadcn-tables/AdministrationTable.vue')
             },
         ],

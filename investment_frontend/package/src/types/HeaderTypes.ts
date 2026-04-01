@@ -6,10 +6,10 @@ type notificationType = {
 
 type profileType = {
   title: string;
-
   subtitle: string;
   url: string;
   img: string;
+  roles?: string[];
 };
 
 
