@@ -1,3 +1,19 @@
+### Java
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package Files
+*.jar
+*.war
+*.ear
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
 ### Node
 # Dependencies
 node_modules/
@@ -42,27 +58,6 @@ out/
 .yarn/unplugged
 .yarn/install-state.gz
 .pnp.*
-
-### Ruby
-# Build artifacts
-*.gem
-*.rbc
-/coverage/
-/pkg/
-/tmp/
-
-# Bundler
-/.bundle/
-/vendor/bundle
-
-# Documentation cache and generated files
-/.yardoc/
-/doc/
-/rdoc/
-
-# Remove Gemfile.lock from gitignore if creating an application, leave it for libraries
-Gemfile.lock
-# .ruby-version
 
 ### Windows
 # Windows thumbnail cache files
