@@ -9,7 +9,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/portfolio")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class PortfolioController {
     private final PortfolioService portfolioService;
 
