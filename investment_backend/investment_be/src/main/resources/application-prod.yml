@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: investment_be
+  datasource:
+    # Syntax: ${ENV_VAR_NAME:default_value}
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+    # Senior Addition: Connection Pool Management (HikariCP)
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 30000
+      max-lifetime: 1800000
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      # 'validate' is correct for prod. 'none' is even safer if using Flyway/Liquibase.
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Critical for performance
+        jdbc.batch_size: 25
+        order_inserts: true
+        order_updates: true
+
+jwt:
+  # Injected via Cloud Provider (Render/AWS/etc)
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:3600000}
+
+server:
+  # Use ${PORT} because cloud providers (Render, Heroku)
+  # assign a dynamic port via environment variables.
+  port: ${PORT:8081}
+
+# Optimization for production logs
+logging:
+  level:
+    root: INFO
+    com.investment.be: INFO # Only log your app logic, not every Hibernate query
