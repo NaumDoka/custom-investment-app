@@ -32,7 +32,7 @@ public class MarketSimulatorService {
     private final Map<String, MarketBias> activeBiases = new ConcurrentHashMap<>();
     private final Map<String, CandleDto> currentMinuteCandles = new ConcurrentHashMap<>();
 
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 5000)
     public void generateCandlesForAllAssets() {
         List<Asset> allAssets = assetRepository.findAll();
         Instant now = Instant.now();
