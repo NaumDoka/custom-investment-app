@@ -4,6 +4,7 @@ import { useAuth } from '@/store/auth.ts'
 import { Card } from '@/components/ui/card'
 import { Icon } from '@iconify/vue'
 import VueApexCharts from "vue3-apexcharts";
+import type { ApexOptions } from 'apexcharts';
 import {usePortfolioStore} from "@/store/portfolioValue.ts";
 
 const store = usePortfolioStore();
@@ -24,7 +25,7 @@ const diffPercent = computed(() => {
 })
 
 // Donut Chart Config
-const chartOptions = computed(() => ({
+const chartOptions = computed<ApexOptions>(() => ({
   chart: { type: 'donut', fontFamily: 'inherit' },
   labels: portfolioData.value.map(p => p.asset),
   colors: ["#5D87FF", "#FFDF00", "#49BEFF"],
@@ -59,7 +60,7 @@ onMounted(() => {
 
         <div class="flex flex-wrap gap-3 mt-4">
           <div v-for="(item, idx) in portfolioData" :key="item.asset" class="flex items-center">
-            <Icon icon="tabler:point-filled" :style="{ color: chartOptions.colors[idx % 3] }" class="mr-1" />
+            <Icon icon="tabler:point-filled" :style="{ color: chartOptions.colors![idx % 3] }" class="mr-1" />
             <span class="text-xs text-muted-foreground">{{ item.asset }}</span>
           </div>
         </div>

@@ -2,6 +2,7 @@
 import {ref, watch, onMounted, onUnmounted, computed} from 'vue'
 import { createStompClient, subscribeTopic } from "@/services/ws.ts";
 import VueApexCharts from 'vue3-apexcharts'
+import type { ApexOptions } from 'apexcharts';
 import {
   Select,
   SelectTrigger,
@@ -92,7 +93,7 @@ const connectWS = async (assetName: string) => {
   });
 }
 
-const chartOptions = computed(() => ({
+const chartOptions = computed<ApexOptions>(() => ({
   chart: {
     type: 'line',
     toolbar: { show: false },
