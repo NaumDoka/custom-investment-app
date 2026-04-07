@@ -19,7 +19,7 @@ spring:
   jpa:
     hibernate:
       # 'validate' is correct for prod. 'none' is even safer if using Flyway/Liquibase.
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
