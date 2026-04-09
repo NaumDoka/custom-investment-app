@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/assets")
 @RequiredArgsConstructor
+@CrossOrigin("*")
 public class AssetController {
     private final AssetService assetService;
     private final SimpMessagingTemplate ws;
