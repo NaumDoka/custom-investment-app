@@ -15,7 +15,7 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     const authStore = useAuth();
-    const token = authStore.token.value || localStorage.getItem('token');
+    const token = authStore.token.value || sessionStorage.getItem('token');
     if (token  && token != 'null') {
         config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,6 +26,7 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
+            sessionStorage.clear();
             const auth = useAuth();
             auth.logout();
             // window.location.href = "/auth/login2";

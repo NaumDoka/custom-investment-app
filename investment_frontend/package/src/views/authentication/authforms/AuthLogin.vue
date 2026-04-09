@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, nextTick} from 'vue'
 import {useRouter, RouterLink} from 'vue-router'
 import {useAuth} from '@/store/auth'
 import Button from '@/components/ui/button/Button.vue'
@@ -22,7 +22,8 @@ async function onSubmit(event: Event) {
   try {
     const success = await authStore.login(name.value, password.value)
     if (success) {
-      router.push({ name: 'Home' })
+      await nextTick()
+      await router.push({name: 'Home'})
     } else {
       errorMessage.value = 'Invalid credentials'
     }

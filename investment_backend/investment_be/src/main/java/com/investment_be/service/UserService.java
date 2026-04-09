@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,24 @@ public class UserService {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+
+    public Map<String, Object> authenticate(String name, String password) {
+        User user = userRepo.findByName(name)
+                .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
+
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            String token = jwtService.generateToken(user);
+
+            // Security Best Practice: Remove password hash before sending to frontend
+            user.setPassword(null);
+
+            return Map.of(
+                    "token", token,
+                    "user", user
+            );
+        }
+        throw new RuntimeException("INVALID_CREDENTIALS");
+    }
 
     public User register(User user) {
         if (userRepo.findByName(user.getName()).isPresent()) {

@@ -25,6 +25,7 @@ public class AuthController {
         try {
             User registeredUser = userService.register(user);
             String token = jwtService.generateToken(registeredUser);
+            registeredUser.setPassword(null);
 
             return ResponseEntity.ok(Map.of(
                     "token", token,
@@ -49,12 +50,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String,String> body) {
-        String token = userService.login(body.get("name"), body.get("password"));
-        if (token != null) {
-            User user = userService.getUserByName(body.get("name"));
-            return ResponseEntity.ok(Map.of("token", token, "user", user));
+        try {
+            Map<String, Object> authData = userService.authenticate(body.get("name"), body.get("password"));
+            return ResponseEntity.ok(authData);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(401).body(e.getMessage());
         }
-        return ResponseEntity.status(401).body("Invalid credentials");
     }
 
     @PutMapping("/update-profile/{id}")

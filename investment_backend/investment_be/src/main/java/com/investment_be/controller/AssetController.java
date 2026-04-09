@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/assets")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
 public class AssetController {
     private final AssetService assetService;
     private final SimpMessagingTemplate ws;
@@ -22,11 +21,13 @@ public class AssetController {
     private final PortfolioService portfolioService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
     public List<Asset> getAllAssets() {
         return assetService.getAllAssets();
     }
 
     @PostMapping("/update")
+    @PreAuthorize("hasRole('ADMIN')")
     public Asset updateAsset(@RequestParam Long id, @RequestParam Double price) {
         Asset a = assetService.updatePrice(id, price);
         ws.convertAndSend("/topic/update", a);

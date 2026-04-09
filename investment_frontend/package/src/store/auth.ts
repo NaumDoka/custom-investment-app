@@ -11,8 +11,8 @@ interface User {
 }
 
 const state = reactive({
-    user: JSON.parse(localStorage.getItem('user') || 'null') as User | null,
-    token: localStorage.getItem('token') || null
+    user: JSON.parse(sessionStorage.getItem('user') || 'null') as User | null,
+    token: sessionStorage.getItem('token') || null
 });
 
 export const useAuth = () => {
@@ -30,20 +30,17 @@ export const useAuth = () => {
         return !!state.token && !isTokenExpired(state.token);
     })
 
-    const setUser = (user: User | null, token: string | null = state.token) => {
+    const setUser = (user: any, token: string | null = state.token) => {
         state.user = user;
         state.token = token;
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('user');
-        }
 
-        if (token) {
-            localStorage.setItem('token', token);
-        } else {
-            localStorage.removeItem('token');
-        }
+        if (user) sessionStorage.setItem('user', JSON.stringify(user));
+        else sessionStorage.removeItem('user');
+
+
+        if (token) sessionStorage.setItem('token', token);
+        else sessionStorage.removeItem('token');
+
     };
 
     const login = async (name: string, password: string) => {
