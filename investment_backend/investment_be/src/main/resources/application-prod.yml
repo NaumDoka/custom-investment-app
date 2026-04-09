@@ -26,7 +26,7 @@ spring:
         # Critical for performance
         jdbc.batch_size: 25
         order_inserts: true
-        order_updates: true
+        order_updates: true7
 
 jwt:
   # Injected via Cloud Provider (Render/AWS/etc)

@@ -44,16 +44,21 @@ onUnmounted(() => { if (unsubscribe) unsubscribe(); });
 const strength = ref(0.002);
 const emit = defineEmits(['refresh']);
 
+const pendingActions = ref<Record<string, boolean>>({});
+
 const handleMarketMove = async (type: 'pump' | 'dump', assetName: string) => {
   try {
+    pendingActions.value[assetName] = true;
     const multiplier = type === 'pump' ? strength.value : -strength.value;
 
-    // Calling the /admin/pump or /admin/dump endpoints for the specific asset
     await api.post(`/admin/${type}/${assetName}?amount=${multiplier}`);
+    toast.success(`${assetName} ${type} initiated!`);
     emit('refresh');
   } catch (error) {
     console.error(`Failed to move market`, error);
     toast.error("Action failed.");
+  } finally {
+    setTimeout(() => { pendingActions.value[assetName] = false; }, 1000);
   }
 }
 </script>
