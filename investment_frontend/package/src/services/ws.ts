@@ -2,8 +2,8 @@ import SockJS from "sockjs-client";
 import {Client, type IMessage} from "@stomp/stompjs";
 import {useAuth} from "@/store/auth";
 
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || "http://localhost:8081";
-const WS_PATH = (import.meta.env.VITE_WS_PATH as string) || "/ws";
+const API_BASE = import.meta.env.VITE_API_BASE as string;
+const WS_PATH = import.meta.env.VITE_WS_PATH as string;
 
 export function createStompClient(onConnect?: () => void) {
     const { token } = useAuth();

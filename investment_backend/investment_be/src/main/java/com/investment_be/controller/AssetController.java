@@ -6,6 +6,7 @@ import com.investment_be.service.AssetService;
 import com.investment_be.service.PortfolioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/assets")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN', 'CLIENT')")
 public class AssetController {
     private final AssetService assetService;
     private final SimpMessagingTemplate ws;

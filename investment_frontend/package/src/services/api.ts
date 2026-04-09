@@ -1,7 +1,11 @@
 import axios from "axios";
 import {useAuth} from "@/store/auth";
 
-const API_BASE = (import.meta.env.VITE_API_BASE as string) || "http://localhost:8081";
+const API_BASE = import.meta.env.VITE_API_BASE;
+
+if (!API_BASE) {
+    throw new Error("VITE_API_BASE is not defined. Check your .env files.");
+}
 
 const api = axios.create({
     baseURL: API_BASE,
@@ -10,9 +14,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const { token } = useAuth()
-    if (token.value) {
-        config.headers.Authorization = `Bearer ${token.value}`;
+    const authStore = useAuth();
+    const token = authStore.token.value || localStorage.getItem('token');
+    if (token  && token != 'null') {
+        config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 }, (error) => Promise.reject(error));
